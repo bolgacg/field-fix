@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bucket off grade, or no RTK fix?</title>
+<meta name="description" content="A knowledge-base entry for two machine control support tickets, written from Makin's public manuals with a page reference on every step, plus a calibration-check calculator. Work sample by Bolgaç Gülen, October 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#faf9f7;--ink:#1a1d21;--soft:#5b6470;--faint:#8b95a1;--rule:#e2e0dc;--rule2:#c9c5be;--panel:#f3f1ed;--card:#fff;
+  --pos:#2f7d54;--neg:#b03a3a;--accent:#2c4a6b;--dim:rgba(26,29,33,.55);
+  --t1:#d3dde8;--t2:#a7bbd0;--t3:#7896b5;--t4:#4c6f93;--t5:#2c4a6b;
+  --posn:#1b8a7a;--geo:#c8860d;
+  --serif:'Newsreader',Georgia,serif;--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;padding-bottom:110px;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none;font-weight:500}a:hover{text-decoration:underline}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header{padding:34px 0 18px}
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;line-height:1.5}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4.6vw,44px);line-height:1.1;letter-spacing:-.01em;margin:10px 0 12px;max-width:860px;text-wrap:balance}
+.dek{max-width:800px;color:var(--soft);font-size:17px;font-family:var(--serif);line-height:1.5;margin-bottom:12px}
+.dek strong{color:var(--ink)}
+.byline{font-family:var(--mono);font-size:12px;color:var(--faint);display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+section{padding:34px 0 6px}
+section.first{padding-top:6px}
+.sec-label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+h2{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.2;margin-bottom:10px;text-wrap:balance}
+h3{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.3;margin-bottom:6px}
+p{margin-bottom:12px}
+.lede{color:var(--soft);max-width:780px;margin-bottom:16px}
+.lede strong{color:var(--ink)}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:18px 20px;margin-top:12px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:12.5px;padding:8px 12px;border:1px solid var(--rule2);border-radius:3px;background:var(--card);color:var(--soft);cursor:pointer;line-height:1.3;text-align:left}
+.chip:hover{color:var(--ink);border-color:var(--soft)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper);font-weight:500}
+.hint{font-size:12.5px;color:var(--faint);line-height:1.45;margin:6px 0 10px}
+.hint b{color:var(--soft)}
+.cap{font-size:13.5px;color:var(--soft);margin-top:14px;max-width:800px}
+.cap span{display:block;margin-bottom:4px}
+.cap b{color:var(--ink);font-weight:600}
+.cap span span{display:inline;margin:0}
+
+/* triage */
+.tri{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+@media (min-width:880px){.tri{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:26px}.tri .panel{position:sticky;top:14px;align-self:start}}
+.axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:2px 0 2px;padding-left:2px}
+.tgroup{margin:0}
+.tlab{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);padding:9px 0 5px}
+.tlab i{width:12px;height:12px;border-radius:2px;display:inline-block;flex:none}
+.tlab em{font-style:normal;color:var(--faint);text-transform:none;letter-spacing:0;font-size:11px}
+.row{display:grid;grid-template-columns:7px 30px minmax(0,1fr);column-gap:10px;align-items:center;width:100%;text-align:left;background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:0 12px 0 0;margin:0 0 5px;cursor:pointer;font:inherit;color:inherit;min-height:48px;overflow:hidden}
+.row .bar{align-self:stretch;background:var(--tc)}
+.row .n{font-family:var(--mono);font-size:12.5px;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;font-weight:500;background:var(--card)}
+.row .tx{padding:8px 0}
+.row .tt{display:block;font-size:15px;line-height:1.35;font-weight:500}
+.row .pg{display:block;font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:2px;line-height:1.4}
+.row .only{font-family:var(--mono);font-size:10px;color:var(--soft);border:1px solid var(--rule2);padding:0 5px;border-radius:3px;margin-left:6px;white-space:nowrap;font-weight:400}
+.row:hover{border-color:var(--soft)}
+.row[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.row[aria-pressed="true"] .n{background:var(--ink);color:var(--paper)}
+.row.ask{border-style:dashed}
+.row.ask .bar{background:transparent}
+.cut{border-top:2px dashed var(--accent);margin:12px 0 2px;padding-top:5px;font-family:var(--mono);font-size:11.5px;color:var(--accent);line-height:1.45}
+.panel{background:var(--panel);border:1px solid var(--rule2);border-radius:6px;padding:16px 18px}
+.panel.inline{margin:-1px 0 10px}
+.pk{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.panel h3{margin-bottom:8px}
+.ml{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:10px 0 4px}
+ul.means,ol.askl{padding-left:18px;margin:0 0 8px}
+ul.means li,ol.askl li{margin-bottom:6px;font-size:15px;line-height:1.5}
+ol.askl li b{display:block;font-weight:600}
+ol.askl li span.why{color:var(--soft)}
+.gtag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--soft);border:1px dashed var(--soft);border-radius:3px;padding:0 5px;margin-left:4px;white-space:nowrap;line-height:1.6;vertical-align:1px}
+li.g{list-style-type:circle}
+.qs{margin-top:10px;border-left:3px solid var(--rule2);padding:2px 0 2px 12px}
+.qs p{font-size:13.5px;color:var(--soft);margin-bottom:6px;line-height:1.5}
+.qs q{font-family:var(--serif);font-size:15px;color:var(--ink);quotes:"\201C" "\201D"}
+.qs a{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
+.pnav{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{font-family:var(--mono);font-size:12px;padding:8px 12px;border-radius:4px;border:1px solid var(--rule2);background:var(--card);color:var(--soft);cursor:pointer}
+.btn:hover{border-color:var(--soft);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--soft);margin-top:12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:2px;display:inline-block}
+
+.qa{list-style:none;padding:0;max-width:820px;margin:0}
+.qa li{padding:9px 0;border-top:1px solid var(--rule);font-size:16px}
+.qa li:last-child{border-bottom:1px solid var(--rule)}
+.qa b{display:block;font-family:var(--serif);font-size:18px;font-weight:600}
+
+.primer{padding-left:20px;max-width:800px}
+.primer li{margin-bottom:6px}
+.gloss{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px 24px;font-size:13.5px;color:var(--soft);margin-top:10px}
+.gloss b{color:var(--ink);font-family:var(--mono);font-size:12px;font-weight:500;display:block}
+#drawing svg{width:100%;height:auto;display:block;max-width:620px;margin:0 auto}
+#drawing .hit{cursor:pointer}
+.readout{font-size:15px;margin-top:10px;padding:12px 14px;background:var(--panel);border-radius:4px}
+.readout b{font-weight:600}
+.chainlab{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:3px;margin-left:6px;color:#fff}
+
+blockquote{font-family:var(--serif);font-size:17px;line-height:1.5;border-left:3px solid var(--rule2);padding:2px 0 2px 16px;margin:12px 0;max-width:800px}
+blockquote cite{display:block;font-family:var(--mono);font-size:11.5px;font-style:normal;color:var(--faint);margin-top:4px}
+.handover{margin-top:14px;font-family:var(--serif);font-size:17px;max-width:780px}
+
+.stepcard{border:1px solid var(--rule);border-radius:6px;background:var(--card);padding:14px 18px;margin:10px 0;display:grid;grid-template-columns:7px minmax(0,1fr);column-gap:14px}
+.stepcard .bar{border-radius:3px;background:var(--tc)}
+.askbox{border:1px dashed var(--rule2);border-radius:6px;background:var(--card);padding:14px 18px;margin:12px 0}
+
+/* calculator */
+.calc-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media (min-width:880px){.calc-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+fieldset{border:1px solid var(--rule);border-radius:5px;padding:10px 12px 12px;min-width:0}
+legend{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft);padding:0 4px}
+.xyz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.xyz{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fld{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fld span{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.06em}
+.fld input{font-family:var(--mono);font-size:16px;padding:7px 8px;border:1px solid var(--rule2);border-radius:4px;background:#fff;color:var(--ink);width:100%;min-width:0}
+.fld input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.tilt{display:flex;align-items:center;gap:8px;font-size:14.5px;cursor:pointer}
+.tilt input{width:18px;height:18px}
+.vizrow{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:14px}
+.vizrow svg{width:100%;max-width:360px;height:auto;display:block;overflow:visible}
+.vizrow text{font-family:var(--mono);font-size:11px;fill:var(--soft)}
+.vizrow .ttl{font-family:var(--sans);font-size:12.5px;fill:var(--ink);font-weight:500}
+.vizrow .lbl{font-family:var(--sans);font-size:12px;fill:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+th{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);text-align:right;padding:0 0 8px;border-bottom:1px solid var(--rule);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:7px 0;border-bottom:1px solid var(--rule);text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td:first-child{text-align:left;font-family:var(--sans)}
+th+th,td+td{padding-left:14px}
+.tscroll{overflow-x:auto}
+.ok{color:var(--pos);font-weight:600}.bad{color:var(--neg);font-weight:600}
+.verdict{margin-top:16px;padding:2px 0 2px 16px;border-left:3px solid var(--accent);font-size:15px;max-width:820px}
+.verdict.badv{border-left-color:var(--neg)}
+.verdict.okv{border-left-color:var(--pos)}
+.verdict p{margin-bottom:8px}
+.verdict p.first{font-weight:600}
+.note{font-size:13px;color:var(--soft);margin-top:10px;line-height:1.5;max-width:820px}
+
+.kb h3{margin-top:18px}
+.limits{border:1px solid var(--rule);border-left:3px solid var(--neg);border-radius:4px;padding:16px 20px;background:var(--card);max-width:860px}
+.limits ul{padding-left:18px}
+.limits li{font-size:15px;color:var(--soft);margin-bottom:7px}
+.limits li b{color:var(--ink)}
+.srcs{padding-left:18px;font-size:14px;color:var(--soft)}.srcs li{margin-bottom:6px}
+footer{border-top:1px solid var(--rule);margin-top:44px;padding:20px 0 30px;font-size:12.5px;color:var(--faint)}
+footer p{margin-bottom:8px}
+
+details.full{border:1px solid var(--rule);border-radius:6px;background:var(--card);margin:12px 0;padding:0 18px}
+details.full summary{cursor:pointer;padding:14px 0;font-family:var(--serif);font-size:19px;font-weight:600;list-style-position:outside}
+details.full summary .sm{display:block;font-family:var(--mono);font-size:11.5px;font-weight:400;color:var(--faint);margin-top:2px}
+details.full[open]{padding-bottom:8px}
+@media (max-width:560px){header{padding:20px 0 8px}h1{font-size:27px;margin:8px 0 8px}.dek{font-size:15.5px;line-height:1.45;margin-bottom:10px}.eyebrow{font-size:10px;letter-spacing:.12em}
+  #ticketchips{display:grid;grid-template-columns:1fr 1fr}#ticketchips .chip{font-size:12px;padding:7px 9px}
+  th,td:first-child{white-space:normal}th{vertical-align:bottom}details.full{padding:0 12px}}
+.tlab{display:block}.tlab i{vertical-align:-1px;margin-right:8px}.tlab em{margin-left:6px}
+/* walkthrough */
+#tour{position:absolute;top:0;left:0;right:0;z-index:50;display:none;pointer-events:none}
+#tour.on{display:block}
+.tour-hl{position:absolute;border:2px solid var(--accent);border-radius:8px;box-shadow:0 0 0 9999px var(--dim);transition:all .35s ease;pointer-events:none}
+.tour-card{position:absolute;width:min(400px,calc(100vw - 32px));background:var(--card);border:1px solid var(--rule2);border-radius:8px;padding:16px 18px;box-shadow:0 6px 30px rgba(0,0,0,.2);pointer-events:auto}
+.tour-card .tk{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.tour-card p{font-size:14px;line-height:1.55;color:var(--ink);margin:0 0 12px}
+.tour-nav{display:flex;align-items:center;gap:8px}
+.tour-nav .dots{flex:1;display:flex;gap:5px}
+.tour-nav .dots i{width:6px;height:6px;border-radius:50%;background:var(--rule2)}
+.tour-nav .dots i.on{background:var(--accent)}
+.tour-btn{font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:4px;border:1px solid var(--rule2);background:var(--card);color:var(--soft);cursor:pointer}
+.tour-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.tour-open{font-family:var(--mono);font-size:12px;padding:6px 12px;border-radius:4px;border:1px solid var(--accent);background:var(--card);color:var(--accent);cursor:pointer}
+.tour-open:hover{background:var(--accent);color:#fff}
+@media (max-width:560px){h2{font-size:24px}.card{padding:14px 12px}.panel{padding:14px 14px}.stepcard{padding:12px 12px;column-gap:10px}.dek{font-size:16px}}
+</style>
+</head>
+<body>
+<div id="tour"><div class="tour-hl"></div><div class="tour-card"></div></div>
+
+<header><div class="wrap">
+  <div class="eyebrow">Work sample · Makin Support Engineer, Odense · Bolgaç Gülen · October 2026</div>
+  <h1>Bucket off grade, or no RTK fix: what to check first?</h1>
+  <p class="dek">This is the knowledge-base entry I would write for two typical machine control tickets. <strong>Each check runs cheapest first, says what its result means and cites the page of Makin's public manuals it comes from.</strong> Where I add general practice that is not Makin's procedure, the line says so.</p>
+  <div class="byline"><button class="tour-open" id="tourbtn">Start the walkthrough</button><span>It is not a Makin document.</span></div>
+</div></header>
+
+<section class="first" id="triage"><div class="wrap">
+  <div class="card" id="triagecard">
+    <div class="chips" id="ticketchips"></div>
+    <p class="hint"><b>Tap a ticket, then a row.</b> Its card says what to check, what the result means and which manual page says so.</p>
+    <div class="tri">
+      <div id="ladderwrap">
+        <div class="axis"><span>Cheapest first</span><span>Most expensive last</span></div>
+        <div id="ladder"></div>
+      </div>
+      <div class="panel" id="panel"></div>
+    </div>
+    <div class="legend" id="tierlegend"></div>
+    <div class="cap">
+      <span><b>What you are looking at.</b> The checks for the selected ticket, one row each, in the order I would run them, with the questions to ask the distributor before any of them.</span>
+      <span><b>How to read it.</b> The shade at the left of a row is its cost class, from a glance at the tablet (lightest) to an escalation to Makin (darkest). The dashed line marks where technician work starts. The numbers under each title are the manual pages the step rests on.</span>
+      <span><b>What to take from it.</b> <span id="laddersay"></span></span>
+    </div>
+  </div>
+</div></section>
+
+<section id="numbers" style="padding-top:22px"><div class="wrap">
+  <ul class="qa" id="qa">
+    <li><b>How far does a ticket get before anyone recalibrates or repairs anything?</b><span data-n="beforeTech"></span></li>
+    <li><b>How many checks need nothing but the tablet?</b><span data-n="tabletOnly"></span></li>
+    <li><b>How much of this is Makin's own procedure?</b><span data-n="share"></span></li>
+    <li><b>When should the bucket be recalibrated?</b>When a reading on a known point misses it by more than the tolerance, with the bucket open or closed (Excavator manual, p. 173). <a href="#calc">The calculator</a> does the arithmetic and says where to look first.</li>
+  </ul>
+</div></section>
+
+<section id="primer"><div class="wrap">
+  <div class="sec-label">Primer</div>
+  <h2>Five facts needed to read the rest</h2>
+  <p class="lede">This section matters because both tickets are about the same number, the height of the bucket tip, and the guide only makes sense once it is clear how the system arrives at it.</p>
+  <ol class="primer">
+    <li>A machine control system shows the operator, on a tablet in the cab, where the bucket's cutting edge is against the design the site is being dug to.</li>
+    <li>It finds the bucket tip in two parts: a GNSS antenna and receiver give the position of the antenna, and angle sensors on the boom, stick, bucket and machine body give the geometry from the antenna to the tip (Excavator manual, p. 11).</li>
+    <li>Satellite positioning alone is good to about a metre. RTK, real-time kinematic positioning, adds corrections from a base station and brings it to centimetres (general GNSS practice). Makin takes the corrections by UHF radio from a local base or over the internet by NTRIP (p. 152).</li>
+    <li>So a wrong bucket height has two families of cause: the position, which is ticket two, or the geometry and its calibration, which is ticket one. Most checks in this guide exist to tell the two apart cheaply.</li>
+    <li>Installation and main calibration are done by Makin approved technicians (p. 9). A support engineer works between the operator, the distributor's technician and Makin.</li>
+  </ol>
+
+  <div class="card" id="drawcard">
+    <div class="chips" id="partchips"></div>
+    <p class="hint"><b>Tap a part</b>, on the chips or on the drawing. The box under the drawing says what the part does and which steps of the guide check it.</p>
+    <div id="drawing"></div>
+    <div class="readout" id="partread"></div>
+    <div class="cap">
+      <span><b>What you are looking at.</b> A schematic excavator with the parts from Makin's hardware overview (Excavator manual, p. 11), and the two ways corrections reach it. It is a schematic and is not to scale.</span>
+      <span><b>How to read it.</b> Green marks the position chain: satellites, corrections, antenna and receiver. Amber marks the geometry chain: the angle sensors. The outlined box shows the selected part.</span>
+      <span><b>What to take from it.</b> The tablet adds the two chains together to place the bucket tip, so an error at the tip can come from either one, and the first job of support is finding out which.</span>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px">Terms</h3>
+  <div class="gloss">
+    <div><b>RTK</b>Real-time kinematic positioning: satellite positions corrected with data from a base station, accurate to centimetres. General GNSS term.</div>
+    <div><b>Fix</b>The receiver has resolved its RTK solution and the position is good to centimetres. General GNSS term; Makin's Survey manual speaks of an RTK fix position (p. 158).</div>
+    <div><b>Float</b>Corrections arrive but the receiver has not resolved the solution yet; the position is good to decimetres. General GNSS term.</div>
+    <div><b>NTRIP</b>Corrections streamed over the internet. A Makin profile holds server, port, username, password and mountpoint (Excavator manual, p. 159).</div>
+    <div><b>Mountpoint</b>The stream on an NTRIP server; it decides which corrections the receiver gets (p. 159).</div>
+    <div><b>UHF base</b>A local base station on or near the site that sends corrections by radio (p. 152).</div>
+    <div><b>DOP</b>Dilution of precision: how much the satellites' geometry multiplies the errors. Lower is better; a calibration check wants it close to 1.0 or below (pp. 143 and 172).</div>
+    <div><b>hRMS, vRMS</b>The current horizontal and vertical accuracy, defined at the GNSS antenna and not at the bucket (pp. 13 and 143).</div>
+    <div><b>Known point</b>A surveyed point on the site with known coordinates, also called a benchmark or a fix point (pp. 63 and 172).</div>
+    <div><b>Tool point</b>The point on the bucket the system reports: the centre or a corner of the cutting edge (p. 163).</div>
+    <div><b>Project offset</b>A height shift of up to 50 cm that matches the GNSS height to a known point, set only on a correctly calibrated machine (p. 72).</div>
+    <div><b>Multipath</b>Satellite signals that reach the antenna after bouncing off buildings or terrain, which degrades the position (p. 187).</div>
+    <div><b>IB-1</b>Makin's interface box: it powers the sensors and carries their data to the tablet (pp. 11 and 195).</div>
+    <div><b>Distributor</b>The dealer who sells, installs and supports Makin systems in its country, and the first line a support engineer serves.</div>
+  </div>
+</div></section>
+
+<section id="yours"><div class="wrap">
+  <div class="sec-label">The job and Makin's own words</div>
+  <h2>Why a support guide, and why these two tickets</h2>
+  <p class="lede">This section matters because the page is only useful if it is the work the role does, so here are the lines from the advertisement and from the manual that it answers.</p>
+  <blockquote>"Assisting distributors and key accounts with remote troubleshooting of software solutions and hardware"<cite>Makin, Support Engineer advertisement, responsibilities</cite></blockquote>
+  <blockquote>"Creating and maintaining content for our knowledge base"<cite>Makin, Support Engineer advertisement, responsibilities</cite></blockquote>
+  <blockquote>"We recommend that the operator of the machine frequently checks the positioning against a known point on every job site."<cite>Makin' Excavator 3D User Guide 2.36, p. 8</cite></blockquote>
+  <p>So the page is shaped like one knowledge-base entry: a ticket per section, the questions to ask first, the checks in cost order, a page reference on every line, and a calculator for the readings an operator reads out during the call. A distributor's technician should be able to follow it on a phone next to the machine.</p>
+  <p>I picked these two tickets because they sit on the kinds of sensor I already work with. At Black Flag Robotics I build fixed-wing aircraft whose flight systems run on GNSS receivers and inertial sensors, and I keep my own always-on Linux services running by diagnosing them remotely. In both, the first question is whether a fault sits in the position or in the hardware around it, and the first check is the cheapest one that tells the two apart. This guide is written the same way.</p>
+  <p class="handover">The triage at the top holds both tickets. The one step that produces numbers, the bucket on a known point, gets its own calculator next.</p>
+</div></section>
+
+<section id="calc"><div class="wrap">
+  <div class="sec-label">Calculator</div>
+  <h2>Is the bucket within tolerance on the known point?</h2>
+  <p class="lede">This matters because "off grade" becomes a decision only once it is a number against a tolerance. The calculator follows Makin's calibration check (Excavator manual, pp. 172 to 173): the open and the closed bucket on the same known point and, with tilt, the bucket at full tilt both ways.</p>
+  <div class="card" id="calccard">
+    <div id="calctop">
+      <div class="chips" id="exchips"></div>
+      <p class="hint"><b>Tap an example, or type your own readings</b> in metres, as the tablet shows them with tool point coordinates turned on (p. 82). A comma works as the decimal mark. Leave north and east empty to check the height alone. Everything recomputes as you type.</p>
+    </div>
+    <div class="calc-grid">
+      <fieldset><legend>Known point</legend><div class="xyz" data-r="known"></div></fieldset>
+      <fieldset><legend>Open bucket on the point</legend><div class="xyz" data-r="open"></div></fieldset>
+      <fieldset><legend>Closed bucket on the point</legend><div class="xyz" data-r="closed"></div></fieldset>
+      <fieldset><legend>Tolerance and satellites</legend>
+        <div class="xyz">
+          <label class="fld"><span>Horizontal, cm</span><input id="tolh" inputmode="decimal" autocomplete="off"></label>
+          <label class="fld"><span>Height, cm</span><input id="tolv" inputmode="decimal" autocomplete="off"></label>
+          <label class="fld"><span>DOP</span><input id="dop" inputmode="decimal" autocomplete="off"></label>
+        </div>
+      </fieldset>
+    </div>
+    <label class="tilt" style="margin-top:12px"><input type="checkbox" id="tilton"> The machine has tilt or a tiltrotator: add the full-tilt readings</label>
+    <div class="calc-grid" id="tiltrows" style="margin-top:10px" hidden>
+      <fieldset><legend>Full tilt left</legend><div class="xyz" data-r="tl"></div></fieldset>
+      <fieldset><legend>Full tilt right</legend><div class="xyz" data-r="tr"></div></fieldset>
+    </div>
+    <div id="calcres">
+      <div class="vizrow"><div id="topview" style="flex:1 1 280px;max-width:360px"></div><div id="heightview" style="flex:1 1 280px;max-width:360px"></div></div>
+      <div class="tscroll"><table id="calctable"></table></div>
+      <div class="verdict" id="calcverdict"></div>
+    </div>
+    <div class="cap">
+      <span><b>What you are looking at.</b> Left, the error of each reading seen from above, in centimetres north and east of the known point. Right, the height error of each reading, the tablet's height minus the known height.</span>
+      <span><b>How to read it.</b> The known point is the centre of the left plot and the zero line of the right one. The dashed circle and the dashed lines are the tolerance you entered. A green dot is within it, a red dot is not.</span>
+      <span><b>What to take from it.</b> <span id="calcsay"></span></span>
+    </div>
+  </div>
+  <p class="note">The manual gives no number for the tolerance: it says a reading "within a few centimetres of the target" means the calibration is correct (p. 173), and the wheel loader manual says "within the project's tolerances" (p. 163 of that manual). The 3 cm filled in here is my placeholder; enter the project's tolerance instead. The pattern advice under the verdict is my rule of thumb, not Makin's procedure: I call the open and closed readings in agreement when they differ from each other by no more than the tolerance. If the site's fix points are loaded in the project, the tablet's own Fix point control already reports the horizontal and vertical difference for both bucket positions (pp. 63 to 67), and this calculator is for readings phoned or messaged in from any other known point. Nothing you type leaves your browser.</p>
+  <p class="handover">The calculator closes the one step that needs arithmetic. What follows is both tickets in full, what I would add next, and what this page cannot know.</p>
+</div></section>
+
+<section id="full"><div class="wrap">
+  <div class="sec-label">Both tickets in full</div>
+  <h2>Every step on one page, for reading or printing</h2>
+  <p class="lede">This is the same content as the triage at the top, laid out as the article a distributor would print or a new colleague would read once from start to end. Open a ticket to read it.</p>
+  <details class="full" id="t1full"><summary><span id="t1title"></span><span class="sm" id="t1count"></span></summary><p class="lede" id="t1lede"></p><div id="t1body"></div></details>
+  <details class="full" id="t2full"><summary><span id="t2title"></span><span class="sm" id="t2count"></span></summary><p class="lede" id="t2lede"></p><div id="t2body"></div></details>
+</div></section>
+
+<section id="kbnext"><div class="wrap kb">
+  <div class="sec-label">Next entries</div>
+  <h2>What I would add to the knowledge base next</h2>
+  <p class="lede">These are suggestions from reading the public material only. Makin's own knowledge base and partner portal sit behind a login, so they may already cover them.</p>
+  <h3>A logged point as the first attachment of every positioning ticket</h3>
+  <p>A point logged on the tablet records HRMS, VRMS, PDOP, the number of satellites, the NTRIP mountpoint, any project offset and the tool point that was used (Excavator manual, pp. 143 to 144). If distributors logged one point on the known point and attached its record to the ticket, the first reply could start from those values instead of from questions.</p>
+  <h3>A symptom index over the release notes</h3>
+  <p>The release notes already describe faults in the words a technician hears on the phone, such as a Tersus receiver that "lost fix status without notifying the user" (version 2.33.5) or "MiC4 tilt not working" (version 2.33.7). If each symptom pointed to the version that fixed it, a technician could compare it with the Version line in Status during the first call.</p>
+  <h3>A calibration check card for machines with tilt</h3>
+  <p>The manual asks for the check at full tilt and at different rotation angles on both sides (p. 173). A printed card with one row per bucket position and angle would let an operator write the readings down at the machine and send a photo of it with the ticket.</p>
+</div></section>
+
+<section id="limitsec"><div class="wrap">
+  <div class="sec-label">Limits</div>
+  <h2>What this guide does not know</h2>
+  <div class="limits" id="limits">
+    <ul>
+      <li><b>It is written from the public manuals alone.</b> I have not used a Makin system or seen a Makin support case. Every Makin step comes from the user guides and release notes listed below.</li>
+      <li><b>The order is by cost alone.</b> I do not know which causes are most common at Makin. With the ticket history, I would sort by how often a cause occurs and what its check costs.</li>
+      <li><b>It stops at "recalibrate".</b> The bucket calibration procedure is a Makin' Learning course behind a login (Excavator manual, p. 171), so this guide does not describe it.</li>
+      <li><b>The tolerance is an input.</b> The manual says "within a few centimetres" (p. 173) and gives no number. The 3 cm in the calculator is my placeholder.</li>
+      <li><b>Fix and float are general GNSS terms.</b> The excavator manual does not define them, so the definitions here are general practice.</li>
+      <li><b>Hardware differs between installations.</b> Receivers, antennas, cables and bases vary, so the hardware steps are generic.</li>
+      <li><b>Escalation here means what I would send.</b> Makin's internal escalation rules are not public.</li>
+    </ul>
+  </div>
+</div></section>
+
+<section id="coda"><div class="wrap">
+  <div class="sec-label">How it was built</div>
+  <h2>Sources and checks</h2>
+  <p>I downloaded the manuals and release notes from Makin's own download page and read the chapters on calibration, GNSS, correction sources, status and the appendix. Each step carries the pages it rests on. The <span data-n="quotes"></span> short quotations are checked by a script in the repository, <a href="https://github.com/bolgacg/field-fix/blob/main/tools/check_quotes.py">tools/check_quotes.py</a>, against the page they cite in Makin's PDF; on 16 October 2026 it found every one where the page says it is.</p>
+  <p>The page is plain HTML and JavaScript. The counts at the top are computed in your browser from the list of steps the page ships, and the calculator runs in your browser and sends nothing anywhere.</p>
+  <p>I built the page with help from Claude, an AI model, for the code and the checks; the choice of tickets, the order of the checks and every judgement on the page are mine.</p>
+  <ul class="srcs">
+    <li>Makin, knowledge downloads (manuals and release notes): <a href="https://www.makin3d.com/about/knowledge/knowledge-downloads/">makin3d.com/about/knowledge/knowledge-downloads</a></li>
+    <li><a href="https://www.makin3d.com/wp-content/uploads/2025/03/Makin_Excavator_3D_Manual_EN.pdf">Makin' Excavator 3D User Guide 2.36</a>, 1st edition, June 2026. The page numbers cited here are the guide's own, and they match the PDF's page numbers.</li>
+    <li><a href="https://www.makin3d.com/wp-content/uploads/2025/03/Makin_Survey_Manual_EN.pdf">Makin' Survey User Guide 2.36</a>, p. 158 (the No RTK Correction message).</li>
+    <li><a href="https://www.makin3d.com/wp-content/uploads/2025/03/Makin_Wheel_Loader_Manual_EN.pdf">Makin' Wheel Loader User Guide 2.36</a>, p. 163 (calibration check against the project's tolerances).</li>
+    <li><a href="https://www.makin3d.com/wp-content/uploads/2025/01/makin_3d_rel_notes.pdf">Makin' 3D release notes</a>, up to version 2.36.12, 10 June 2026.</li>
+    <li>Makin, Support Engineer advertisement on Jobindex, published 28 September 2026: <a href="https://www.jobindex.dk/jobannonce/h1701846/support-engineer">jobindex.dk/jobannonce/h1701846</a></li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">
+  <p>Bolgaç Gülen, Odense, October 2026. An independent work sample, not affiliated with Makin. Makin's manuals are Makin's: they are linked, not copied, and quoted only in short passages with their page numbers.</p>
+  <p>Every count on this page is computed in your browser from the step list it ships. Source: <a href="https://github.com/bolgacg/field-fix">github.com/bolgacg/field-fix</a></p>
+</div></footer>
+
+<script src="guide-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
