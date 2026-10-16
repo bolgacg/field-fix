@@ -91,7 +91,7 @@ window.GUIDE = {
           "src": [["EX", "63"], ["EX", "67"], ["EX", "172"], ["EX", "173"], ["WL", "163"]],
           "check": "Put the centre of the open bucket's cutting edge on the known point and read the coordinates. Close the bucket and repeat on the same point (pp. 172 to 173). With tilt or a tiltrotator, repeat at full tilt and at several rotation angles on both sides (p. 173). If the site's fix points are loaded in the project, Fix point control runs this check and reports the horizontal and vertical difference for both bucket positions (pp. 63 to 67).",
           "means": [
-            {"t": "Within a few centimetres of the known point: the calibration is correct (p. 173). The manual gives no number. The wheel loader manual words the same test as within the project's tolerances (p. 163 of that manual), so the calculator below asks for the tolerance."},
+            {"t": "Within a few centimetres of the known point: the calibration is correct (p. 173). The manual leaves the exact number to the project. The wheel loader manual words the same test as within the project's tolerances (p. 163 of that manual), so the calculator below asks for the tolerance."},
             {"t": "Outside the tolerance: recalibrate (p. 173). The pattern of the two readings says where to look first."},
             {"t": "Open and closed readings off by the same amount: the bucket geometry is probably fine and the error sits upstream, in the position, a height reference or the machine calibration.", "g": true},
             {"t": "Open and closed readings disagree with each other: between the two readings the antenna stays put and the bucket angle changes most, so the bucket calibration or the bucket sensor is the likely cause.", "g": true},
